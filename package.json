@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.11.3",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-scripts": "4.0.2",
@@ -16,7 +17,14 @@
     "@types/jest": "26.0.20",
     "@types/node": "14.14.25",
     "@types/react": "17.0.1",
-    "@types/react-dom": "17.0.0"
+    "@types/react-dom": "17.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.14.2",
+    "@typescript-eslint/parser": "^4.14.2",
+    "eslint": "^7.19.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "prettier": "2.2.1"
   },
   "scripts": {
     "start": "react-scripts start",
