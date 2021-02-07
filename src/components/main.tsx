@@ -1,8 +1,10 @@
 import Button from '@material-ui/core/Button'
 import Container from '@material-ui/core/Container'
 import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogTitle from '@material-ui/core/DialogTitle'
 import Grid from '@material-ui/core/Grid'
-import Paper from '@material-ui/core/Paper'
 import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
@@ -15,6 +17,18 @@ export interface Character {
     value: string
     display: 'initial' | 'correct' | 'wrong'
     currentWord: boolean
+}
+
+interface GameData {
+    characters: string
+    typedCharacters: string
+    timeLeft: number
+    wordsTyped: number
+    correctCharacters: number
+    errorCount: number
+    wordsPerMinute: number
+    completion: number
+    duration: number
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -54,13 +68,23 @@ export const Main: React.FC = () => {
     const [characters, setCharacters] = React.useState<Character[]>([])
     const [typedCharacters, setTypedCharacters] = React.useState<string>('')
     const [inputValue, setInputValue] = React.useState<string>('')
-    const [time, setTime] = React.useState<number>(GAME_DURATION)
+    const [timeLeft, setTimeLeft] = React.useState<number>(GAME_DURATION)
     const timeRef = React.useRef<any>(null)
     const [newGame, setNewGame] = React.useState<boolean>(false)
     const [newGameTimer, setNewGameTimer] = React.useState<number>(0)
     const [wordsTyped, setWordsTyped] = React.useState<number>(0)
+    const [correctCharacters, setCorrectCharacters] = React.useState<number>(0)
     const inputRef = React.useRef<HTMLInputElement>(null)
     const [inputDisabled, setInputDisabled] = React.useState<boolean>(true)
+    const [errorCount, setErrorCount] = React.useState<number>(0)
+    const [gameData, setGameData] = React.useState<Partial<GameData>>()
+
+    const [resultsDialogOpen, setResultsDialogOpen] = React.useState<boolean>(false)
+
+    const wordsPerMinute =
+        timeLeft !== GAME_DURATION
+            ? wordsTyped / ((GAME_DURATION - timeLeft) / 60)
+            : wordsTyped / (GAME_DURATION / 60)
 
     const handleChange = React.useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,6 +111,7 @@ export const Main: React.FC = () => {
             } else {
                 // latest character is not equal
                 if (val[currentChar] !== characters[currentChar].value || hasWrong) {
+                    setErrorCount((past) => past + 1)
                     hasWrong = true
                     newCharacters = characters.map((each, index) => {
                         if (currentChar <= index) {
@@ -99,6 +124,7 @@ export const Main: React.FC = () => {
                     })
                 } else {
                     // all is true
+
                     let currentWord = true
                     newCharacters = characters.map((each, index) => {
                         if (val[currentChar] === ' ') {
@@ -137,10 +163,11 @@ export const Main: React.FC = () => {
             }
 
             // GROSS WPM FORMULA
-            const correctCharacters = newCharacters.filter((each) => each.display === 'correct')
-                .length
-            const words = correctCharacters / 5
+            const correctChars = newCharacters.filter((each) => each.display === 'correct').length
 
+            const words = correctChars / 5
+
+            setCorrectCharacters(correctChars)
             setWordsTyped(words)
 
             setCharacters(newCharacters)
@@ -155,7 +182,7 @@ export const Main: React.FC = () => {
     )
 
     const newParagraph = () => {
-        const paragraph = lorem.generateParagraphs(1)
+        const paragraph = 'test test' // lorem.generateParagraphs(1)
         let firstWord = true
         const characters: Character[] = Array.from(paragraph).map((each) => {
             if (each === ' ' && firstWord) {
@@ -170,20 +197,27 @@ export const Main: React.FC = () => {
 
         setCharacters(characters)
         setTypedCharacters('')
+
+        setCorrectCharacters(0)
         setInputValue('')
     }
 
     const newGameClick = () => {
         setNewGameTimer(START_TIMER)
+        setTimeLeft(GAME_DURATION)
+        setErrorCount(0)
         setNewGame(true)
         newParagraph()
         setInputDisabled(false)
         clearInterval(timeRef.current)
     }
 
+    const handleResultsDialogClose = () => {
+        setResultsDialogOpen(false)
+    }
+
     React.useEffect(() => {
         if (newGameTimer > 0) {
-            console.log('newGameTimer', newGameTimer)
             const timer = setTimeout(() => {
                 setNewGameTimer(newGameTimer - 1)
             }, 1000)
@@ -191,52 +225,87 @@ export const Main: React.FC = () => {
         }
 
         if (newGameTimer === 0 && newGame) {
-            setTime(GAME_DURATION)
             setNewGame(false)
             timeRef.current = setInterval(() => {
-                setTime((past) => past - 1)
+                setTimeLeft((past) => past - 1)
             }, 1000)
             inputRef.current?.focus()
         }
     }, [newGameTimer, newGame, inputRef])
 
     React.useEffect(() => {
-        if (time === 0) {
+        if (
+            timeLeft === 0 ||
+            (characters.length === correctCharacters && timeLeft !== GAME_DURATION)
+        ) {
             clearInterval(timeRef.current)
             setInputDisabled(true)
             setInputValue('')
+            setWordsTyped(0)
+            setTimeLeft(GAME_DURATION)
+            setGameData({
+                timeLeft,
+                errorCount,
+                wordsTyped,
+                correctCharacters,
+                characters: characters.map((each) => each.value).join(''),
+                typedCharacters,
+                wordsPerMinute:
+                    timeLeft !== GAME_DURATION
+                        ? wordsTyped / ((GAME_DURATION - timeLeft) / 60)
+                        : wordsTyped / (GAME_DURATION / 60),
+                completion: correctCharacters / characters.length,
+                duration: GAME_DURATION,
+            })
+            setResultsDialogOpen(true)
         }
-    })
+    }, [timeLeft, characters, correctCharacters, errorCount, wordsTyped, typedCharacters])
 
-    console.log(inputRef.current)
+    console.log('gameData', gameData)
 
     return (
         <Container>
-            <Appbar time={time} wordsPerMinute={wordsTyped / ((GAME_DURATION - time) / 60)} />
+            <Appbar time={timeLeft} wordsPerMinute={wordsPerMinute} />
             <Grid container spacing={2}>
-                <Grid item>
-                    <View characters={characters} />
-                </Grid>
-                <Grid container item spacing={2}>
-                    <TextField
-                        autoComplete="off"
-                        type="text"
-                        value={inputValue}
-                        label="Word"
-                        id="wordInput"
-                        variant="outlined"
-                        onChange={handleChange}
-                        inputRef={inputRef}
-                        disabled={inputDisabled}
-                        autoFocus
-                    />
-                    <Button variant="contained" onClick={newGameClick}>
-                        New Game
-                    </Button>
+                <View characters={characters} />
+                <Grid container item>
+                    <Grid item xs>
+                        <TextField
+                            autoComplete="off"
+                            type="text"
+                            value={inputValue}
+                            label="Word"
+                            id="wordInput"
+                            variant="outlined"
+                            onChange={handleChange}
+                            inputRef={inputRef}
+                            disabled={inputDisabled}
+                            autoFocus
+                        />
+                    </Grid>
+                    <Grid item xs>
+                        <Button variant="contained" onClick={newGameClick}>
+                            New Game
+                        </Button>
+                    </Grid>
                     <Dialog open={newGameTimer > 0}>
-                        <Paper>
+                        <DialogContent>
                             <Typography>{`New Game starts in ${newGameTimer}`}</Typography>
-                        </Paper>
+                        </DialogContent>
+                    </Dialog>
+                    <Dialog open={resultsDialogOpen} onClose={handleResultsDialogClose}>
+                        <DialogTitle>Results</DialogTitle>
+                        <DialogContent>
+                            <Typography>WPM: {gameData?.wordsPerMinute?.toFixed(2)}</Typography>
+                            <Typography>
+                                Completion: {((gameData?.completion || 0) * 100).toFixed(2)}%
+                            </Typography>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleResultsDialogClose} color="primary">
+                                Ok
+                            </Button>
+                        </DialogActions>
                     </Dialog>
                 </Grid>
             </Grid>

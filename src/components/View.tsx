@@ -1,3 +1,4 @@
+import Grid from '@material-ui/core/Grid'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import clsx from 'clsx'
@@ -9,6 +10,10 @@ type ViewProps = {
 }
 
 const useStyles = makeStyles((theme) => ({
+    container: {
+        padding: theme.spacing(2),
+        height: 100,
+    },
     correct: {
         color: 'green',
     },
@@ -24,7 +29,7 @@ export const View: React.FC<ViewProps> = ({ characters }) => {
     const classes = useStyles()
 
     return (
-        <>
+        <Grid className={classes.container}>
             {characters.map((value, index) => (
                 <Typography
                     key={index}
@@ -38,6 +43,6 @@ export const View: React.FC<ViewProps> = ({ characters }) => {
                     {value.value}
                 </Typography>
             ))}
-        </>
+        </Grid>
     )
 }
