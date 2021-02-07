@@ -1,20 +1,20 @@
-import AppBar from '@material-ui/core/AppBar'
 import Button from '@material-ui/core/Button'
 import Container from '@material-ui/core/Container'
+import Dialog from '@material-ui/core/Dialog'
 import Grid from '@material-ui/core/Grid'
-import IconButton from '@material-ui/core/IconButton'
+import Paper from '@material-ui/core/Paper'
 import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
-import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
-import MenuIcon from '@material-ui/icons/Menu'
 import { LoremIpsum } from 'lorem-ipsum'
 import React from 'react'
+import { Appbar } from './Appbar'
 import { View } from './View'
 
 export interface Character {
     value: string
     display: 'initial' | 'correct' | 'wrong'
+    currentWord: boolean
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -46,23 +46,22 @@ const lorem = new LoremIpsum({
     },
 })
 
-const debounce = (func: any, delay: number) => {
-    let timerId: NodeJS.Timeout
-    return (...args: any) => {
-        clearTimeout(timerId)
-        timerId = setTimeout(() => func(...args), delay)
-    }
-}
+export const GAME_DURATION = 10
+export const START_TIMER = 3
 
 export const Main: React.FC = () => {
     const classes = useStyles()
     const [characters, setCharacters] = React.useState<Character[]>([])
     const [typedCharacters, setTypedCharacters] = React.useState<string>('')
     const [inputValue, setInputValue] = React.useState<string>('')
+    const [time, setTime] = React.useState<number>(GAME_DURATION)
+    const timeRef = React.useRef<any>(null)
+    const [newGame, setNewGame] = React.useState<boolean>(false)
+    const [newGameTimer, setNewGameTimer] = React.useState<number>(0)
+    const [wordsTyped, setWordsTyped] = React.useState<number>(0)
+    const inputRef = React.useRef<HTMLInputElement>(null)
+    const [inputDisabled, setInputDisabled] = React.useState<boolean>(true)
 
-    const [time, setTime] = React.useState<number>(180)
-
-    console.log('inputValue', inputValue)
     const handleChange = React.useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
             const input = event.currentTarget.value
@@ -86,6 +85,7 @@ export const Main: React.FC = () => {
                     }
                 })
             } else {
+                // latest character is not equal
                 if (val[currentChar] !== characters[currentChar].value || hasWrong) {
                     hasWrong = true
                     newCharacters = characters.map((each, index) => {
@@ -98,7 +98,30 @@ export const Main: React.FC = () => {
                         return each
                     })
                 } else {
+                    // all is true
+                    let currentWord = true
                     newCharacters = characters.map((each, index) => {
+                        if (val[currentChar] === ' ') {
+                            // all correct before current index
+                            if (currentChar >= index) {
+                                return {
+                                    ...each,
+                                    display: 'correct',
+                                    currentWord: false,
+                                }
+                            } else {
+                                // not part of word if space
+                                if (each.value === ' ' && currentWord) {
+                                    currentWord = false
+                                }
+
+                                return {
+                                    ...each,
+                                    display: 'initial',
+                                    currentWord,
+                                }
+                            }
+                        }
                         if (currentChar >= index) {
                             return {
                                 ...each,
@@ -113,6 +136,13 @@ export const Main: React.FC = () => {
                 }
             }
 
+            // GROSS WPM FORMULA
+            const correctCharacters = newCharacters.filter((each) => each.display === 'correct')
+                .length
+            const words = correctCharacters / 5
+
+            setWordsTyped(words)
+
             setCharacters(newCharacters)
             if (input.includes(' ') && !hasWrong) {
                 setInputValue('')
@@ -124,66 +154,90 @@ export const Main: React.FC = () => {
         [characters, typedCharacters, inputValue],
     )
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        console.log('keydown', event.key)
+    const newParagraph = () => {
+        const paragraph = lorem.generateParagraphs(1)
+        let firstWord = true
+        const characters: Character[] = Array.from(paragraph).map((each) => {
+            if (each === ' ' && firstWord) {
+                firstWord = false
+            }
+            return {
+                value: each,
+                display: 'initial',
+                currentWord: firstWord,
+            }
+        })
+
+        setCharacters(characters)
+        setTypedCharacters('')
+        setInputValue('')
+    }
+
+    const newGameClick = () => {
+        setNewGameTimer(START_TIMER)
+        setNewGame(true)
+        newParagraph()
+        setInputDisabled(false)
+        clearInterval(timeRef.current)
     }
 
     React.useEffect(() => {
-        if (time !== 0) {
+        if (newGameTimer > 0) {
+            console.log('newGameTimer', newGameTimer)
             const timer = setTimeout(() => {
-                console.log('timeout')
-                setTime(time - 1)
+                setNewGameTimer(newGameTimer - 1)
             }, 1000)
             return () => clearTimeout(timer)
         }
-    })
+
+        if (newGameTimer === 0 && newGame) {
+            setTime(GAME_DURATION)
+            setNewGame(false)
+            timeRef.current = setInterval(() => {
+                setTime((past) => past - 1)
+            }, 1000)
+            inputRef.current?.focus()
+        }
+    }, [newGameTimer, newGame, inputRef])
 
     React.useEffect(() => {
-        if (Object.keys(characters).length === 0) {
-            const paragraph = lorem.generateParagraphs(1)
-            const characters: Character[] = Array.from(paragraph).map((each) => ({
-                value: each,
-                display: 'initial',
-            }))
-
-            setCharacters(characters)
+        if (time === 0) {
+            clearInterval(timeRef.current)
+            setInputDisabled(true)
+            setInputValue('')
         }
-    }, [])
+    })
+
+    console.log(inputRef.current)
 
     return (
         <Container>
-            <AppBar position="static">
-                <Toolbar>
-                    <IconButton
-                        edge="start"
-                        className={classes.menuButton}
-                        color="inherit"
-                        aria-label="menu"
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" className={classes.title}>
-                        Words Per Minute
-                    </Typography>
-                    <Typography variant="h6" className={classes.title}>
-                        TIme: {time}
-                    </Typography>
-                    <Button color="inherit">Login</Button>
-                </Toolbar>
-            </AppBar>
+            <Appbar time={time} wordsPerMinute={wordsTyped / ((GAME_DURATION - time) / 60)} />
             <Grid container spacing={2}>
                 <Grid item>
                     <View characters={characters} />
                 </Grid>
-                <Grid item>
+                <Grid container item spacing={2}>
                     <TextField
+                        autoComplete="off"
+                        type="text"
                         value={inputValue}
                         label="Word"
                         id="wordInput"
                         variant="outlined"
                         onChange={handleChange}
-                        onKeyDown={handleKeyDown}
+                        inputRef={inputRef}
+                        disabled={inputDisabled}
+                        autoFocus
                     />
+                    <Button variant="contained" onClick={newGameClick}>
+                        New Game
+                    </Button>
+                    <Dialog open={newGameTimer > 0}>
+                        <Paper>
+                            <Typography>{`New Game starts in ${newGameTimer}`}</Typography>
+                        </Paper>
+                    </Dialog>
                 </Grid>
             </Grid>
         </Container>

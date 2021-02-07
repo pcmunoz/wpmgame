@@ -15,6 +15,9 @@ const useStyles = makeStyles((theme) => ({
     wrong: {
         color: 'red',
     },
+    currentWord: {
+        textDecorationLine: 'underline',
+    },
 }))
 
 export const View: React.FC<ViewProps> = ({ characters }) => {
@@ -29,6 +32,7 @@ export const View: React.FC<ViewProps> = ({ characters }) => {
                     className={clsx(
                         value.display === 'wrong' && classes.wrong,
                         value.display === 'correct' && classes.correct,
+                        value.currentWord && classes.currentWord,
                     )}
                 >
                     {value.value}
