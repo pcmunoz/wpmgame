@@ -77,7 +77,7 @@ export const Main: React.FC = () => {
     const inputRef = React.useRef<HTMLInputElement>(null)
     const [inputDisabled, setInputDisabled] = React.useState<boolean>(true)
     const [errorCount, setErrorCount] = React.useState<number>(0)
-    const [gameData, setGameData] = React.useState<Partial<GameData>>()
+    const [gameData, setGameData] = React.useState<Partial<GameData>[]>([])
 
     const [resultsDialogOpen, setResultsDialogOpen] = React.useState<boolean>(false)
 
@@ -216,6 +216,7 @@ export const Main: React.FC = () => {
         setResultsDialogOpen(false)
     }
 
+    // New Game Timer
     React.useEffect(() => {
         if (newGameTimer > 0) {
             const timer = setTimeout(() => {
@@ -243,23 +244,26 @@ export const Main: React.FC = () => {
             setInputValue('')
             setWordsTyped(0)
             setTimeLeft(GAME_DURATION)
-            setGameData({
-                timeLeft,
-                errorCount,
-                wordsTyped,
-                correctCharacters,
-                characters: characters.map((each) => each.value).join(''),
-                typedCharacters,
-                wordsPerMinute:
-                    timeLeft !== GAME_DURATION
-                        ? wordsTyped / ((GAME_DURATION - timeLeft) / 60)
-                        : wordsTyped / (GAME_DURATION / 60),
-                completion: correctCharacters / characters.length,
-                duration: GAME_DURATION,
-            })
+            setGameData([
+                ...gameData,
+                {
+                    timeLeft,
+                    errorCount,
+                    wordsTyped,
+                    correctCharacters,
+                    characters: characters.map((each) => each.value).join(''),
+                    typedCharacters,
+                    wordsPerMinute:
+                        timeLeft !== GAME_DURATION
+                            ? wordsTyped / ((GAME_DURATION - timeLeft) / 60)
+                            : wordsTyped / (GAME_DURATION / 60),
+                    completion: correctCharacters / characters.length,
+                    duration: GAME_DURATION,
+                },
+            ])
             setResultsDialogOpen(true)
         }
-    }, [timeLeft, characters, correctCharacters, errorCount, wordsTyped, typedCharacters])
+    }, [timeLeft, characters, correctCharacters, errorCount, wordsTyped, typedCharacters, gameData])
 
     console.log('gameData', gameData)
 
@@ -296,10 +300,25 @@ export const Main: React.FC = () => {
                     <Dialog open={resultsDialogOpen} onClose={handleResultsDialogClose}>
                         <DialogTitle>Results</DialogTitle>
                         <DialogContent>
-                            <Typography>WPM: {gameData?.wordsPerMinute?.toFixed(2)}</Typography>
                             <Typography>
-                                Completion: {((gameData?.completion || 0) * 100).toFixed(2)}%
+                                Curent Game WPM:
+                                {gameData[gameData.length - 1]?.wordsPerMinute?.toFixed(2)}
                             </Typography>
+                            <Typography>
+                                Current Game Completion:
+                                {((gameData[gameData.length - 1]?.completion || 0) * 100).toFixed(
+                                    2,
+                                )}
+                                %
+                            </Typography>
+                            <Typography>
+                                Average WPM:
+                                {gameData.reduce(
+                                    (total, each) => total + (each?.wordsPerMinute || 0),
+                                    0,
+                                ) / gameData.length}
+                            </Typography>
+                            <Typography>Total Games: {gameData.length}</Typography>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleResultsDialogClose} color="primary">
