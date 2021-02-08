@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
     },
     currentWord: {
         textDecorationLine: 'underline',
+        fontWeight: 600,
     },
 }))
 

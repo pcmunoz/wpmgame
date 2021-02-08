@@ -1,7 +1,7 @@
 import React from 'react'
 import './App.css'
+import { Base } from './components/Base'
 import { Login } from './components/Login'
-import { Main } from './components/Main'
 import { User } from './constants'
 
 const tempUsers: User[] = [
@@ -43,7 +43,7 @@ const App: React.FC = () => {
     console.log('users', users)
 
     return isLoggedIn ? (
-        <Main user={user} />
+        <Base user={user} />
     ) : (
         <Login users={users} setIsLoggedIn={setIsLoggedIn} setUser={setUser} />
     )

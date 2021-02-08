@@ -95,7 +95,7 @@ export const Login: React.FC<LoginProps> = ({ users, setIsLoggedIn, setUser }) =
                 </Grid>
                 <Grid item xs={12}>
                     <Button
-                        color="secondary"
+                        color="primary"
                         fullWidth
                         type="submit"
                         variant="contained"

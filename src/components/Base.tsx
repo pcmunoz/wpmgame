@@ -14,7 +14,7 @@ import { Appbar } from './Appbar'
 import { Result } from './Result'
 import { View } from './View'
 
-type MainProps = {
+type BaseProps = {
     user?: User
 }
 
@@ -29,20 +29,25 @@ const lorem = new LoremIpsum({
     },
 })
 
-export const Main: React.FC<MainProps> = ({ user }) => {
+export const Base: React.FC<BaseProps> = ({ user }) => {
     const [characters, setCharacters] = React.useState<Character[]>([])
     const [typedCharacters, setTypedCharacters] = React.useState<string>('')
-    const [inputValue, setInputValue] = React.useState<string>('')
-    const [timeLeft, setTimeLeft] = React.useState<number>(GAME_DURATION)
-    const timeRef = React.useRef<any>(null)
-    const [newGame, setNewGame] = React.useState<boolean>(false)
-    const [newGameTimer, setNewGameTimer] = React.useState<number>(0)
-    const [wordsTyped, setWordsTyped] = React.useState<number>(0)
     const [correctCharacters, setCorrectCharacters] = React.useState<number>(0)
+
     const inputRef = React.useRef<HTMLInputElement>(null)
     const [inputDisabled, setInputDisabled] = React.useState<boolean>(true)
+    const [inputValue, setInputValue] = React.useState<string>('')
+
+    const timeRef = React.useRef<any>(null)
+    const [timeLeft, setTimeLeft] = React.useState<number>(GAME_DURATION)
+
+    const [newGame, setNewGame] = React.useState<boolean>(false)
+    const [newGameTimer, setNewGameTimer] = React.useState<number>(0)
+
+    const [wordsTyped, setWordsTyped] = React.useState<number>(0)
     const [errorCount, setErrorCount] = React.useState<number>(0)
     const [gameData, setGameData] = React.useState<Partial<GameData>[]>([])
+
     const [saveData, setSaveData] = React.useState<boolean>(false)
     const [error, setError] = React.useState(null)
     const [isLoaded, setIsLoaded] = React.useState<boolean>(false)
@@ -314,10 +319,12 @@ export const Main: React.FC<MainProps> = ({ user }) => {
                             </Typography>
                             <Typography>
                                 Average WPM:
-                                {gameData.reduce(
-                                    (total, each) => total + (each?.wordsPerMinute || 0),
-                                    0,
-                                ) / gameData.length}
+                                {(
+                                    gameData.reduce(
+                                        (total, each) => total + (each?.wordsPerMinute || 0),
+                                        0,
+                                    ) / gameData.length
+                                ).toFixed(2)}
                             </Typography>
                             <Typography>Total Games: {gameData.length}</Typography>
                         </DialogContent>
