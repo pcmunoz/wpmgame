@@ -11,6 +11,16 @@ export interface User {
     gameData: any
 }
 
+const tempUsers: User[] = [
+    {
+        id: '1',
+        createdAt: ' ',
+        username: 'un1',
+        password: 'pw1',
+        gameData: '',
+    },
+]
+
 const App: React.FC = () => {
     const [error, setError] = React.useState(null)
     const [isLoaded, setIsLoaded] = React.useState<boolean>(false)

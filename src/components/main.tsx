@@ -5,7 +5,6 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Grid from '@material-ui/core/Grid'
-import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import { LoremIpsum } from 'lorem-ipsum'
@@ -37,24 +36,6 @@ export interface GameData {
     duration: number
 }
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-    },
-    menuButton: {
-        marginRight: theme.spacing(2),
-    },
-    title: {
-        flexGrow: 1,
-    },
-    correct: {
-        color: 'green',
-    },
-    wrong: {
-        color: 'red',
-    },
-}))
-
 const lorem = new LoremIpsum({
     sentencesPerParagraph: {
         max: 7,
@@ -70,7 +51,6 @@ export const GAME_DURATION = 10
 export const START_TIMER = 3
 
 export const Main: React.FC<MainProps> = ({ user }) => {
-    const classes = useStyles()
     const [characters, setCharacters] = React.useState<Character[]>([])
     const [typedCharacters, setTypedCharacters] = React.useState<string>('')
     const [inputValue, setInputValue] = React.useState<string>('')
@@ -192,7 +172,7 @@ export const Main: React.FC<MainProps> = ({ user }) => {
     )
 
     const newParagraph = () => {
-        const paragraph = 'test test' // lorem.generateParagraphs(1)
+        const paragraph = lorem.generateParagraphs(1) // 'test test'
         let firstWord = true
         const characters: Character[] = Array.from(paragraph).map((each) => {
             if (each === ' ' && firstWord) {
@@ -286,7 +266,7 @@ export const Main: React.FC<MainProps> = ({ user }) => {
             })
                 .then((res) => res.json())
                 .then(
-                    (result) => {
+                    () => {
                         setIsLoaded(true)
                         setSaveData(false)
                         setIsSuccessful(true)

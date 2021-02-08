@@ -101,7 +101,7 @@ export const Login: React.FC<LoginProps> = ({ users, setIsLoggedIn, setUser }) =
                         variant="contained"
                         onClick={handleLoginClick}
                     >
-                        Log in
+                        Login
                     </Button>
                 </Grid>
             </Grid>
