@@ -15,6 +15,15 @@ USERS IN MOCK
 
 GAME_TIME can be adjusted in constants.ts
 
+# GITHUB DEPLOY
+
+install `npm install gh-pages --save-dev`
+ADD `homepage` in package.json
+ADD to scripts
+"predeploy": "npm run build",
+"deploy": "gh-pages -d build"
+`npm run deploy`
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
