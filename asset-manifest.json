@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/wpmgame/static/css/main.5594ed1f.chunk.css",
-    "main.js": "/wpmgame/static/js/main.cea999ac.chunk.js",
-    "main.js.map": "/wpmgame/static/js/main.cea999ac.chunk.js.map",
+    "main.js": "/wpmgame/static/js/main.2a5fe940.chunk.js",
+    "main.js.map": "/wpmgame/static/js/main.2a5fe940.chunk.js.map",
     "runtime-main.js": "/wpmgame/static/js/runtime-main.a1299679.js",
     "runtime-main.js.map": "/wpmgame/static/js/runtime-main.a1299679.js.map",
     "static/js/2.51f400ed.chunk.js": "/wpmgame/static/js/2.51f400ed.chunk.js",
@@ -17,6 +17,6 @@
     "static/js/runtime-main.a1299679.js",
     "static/js/2.51f400ed.chunk.js",
     "static/css/main.5594ed1f.chunk.css",
-    "static/js/main.cea999ac.chunk.js"
+    "static/js/main.2a5fe940.chunk.js"
   ]
 }
