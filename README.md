@@ -5,12 +5,12 @@ Request is mocked on https://www.mockapi.io/projects
 USERS IN MOCK
 
 {
-"username": "username 1",
-"password": "password 1",
+"username": "username1",
+"password": "password1",
 },
 {
-"username": "username 2",
-"password": "password 2",
+"username": "username2",
+"password": "password2",
 }
 
 GAME_TIME can be adjusted in constants.ts
