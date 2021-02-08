@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/wpmgame/static/css/main.5594ed1f.chunk.css",
+    "main.js": "/wpmgame/static/js/main.cea999ac.chunk.js",
+    "main.js.map": "/wpmgame/static/js/main.cea999ac.chunk.js.map",
+    "runtime-main.js": "/wpmgame/static/js/runtime-main.a1299679.js",
+    "runtime-main.js.map": "/wpmgame/static/js/runtime-main.a1299679.js.map",
+    "static/js/2.51f400ed.chunk.js": "/wpmgame/static/js/2.51f400ed.chunk.js",
+    "static/js/2.51f400ed.chunk.js.map": "/wpmgame/static/js/2.51f400ed.chunk.js.map",
+    "static/js/3.e1ab8fde.chunk.js": "/wpmgame/static/js/3.e1ab8fde.chunk.js",
+    "static/js/3.e1ab8fde.chunk.js.map": "/wpmgame/static/js/3.e1ab8fde.chunk.js.map",
+    "index.html": "/wpmgame/index.html",
+    "static/css/main.5594ed1f.chunk.css.map": "/wpmgame/static/css/main.5594ed1f.chunk.css.map",
+    "static/js/2.51f400ed.chunk.js.LICENSE.txt": "/wpmgame/static/js/2.51f400ed.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.a1299679.js",
+    "static/js/2.51f400ed.chunk.js",
+    "static/css/main.5594ed1f.chunk.css",
+    "static/js/main.cea999ac.chunk.js"
+  ]
+}
