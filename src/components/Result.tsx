@@ -8,7 +8,7 @@ import TableFooter from '@material-ui/core/TableFooter'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import React from 'react'
-import { GameData } from './Main'
+import { GameData } from '../constants'
 
 type ResultProps = {
     results: Partial<GameData>[]
