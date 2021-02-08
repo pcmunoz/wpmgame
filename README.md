@@ -1,5 +1,18 @@
 # WPM Game
 
+Request is mocked on https://www.mockapi.io/projects
+
+USERS IN MOCK
+
+{
+"username": "username 1",
+"password": "password 1",
+},
+{
+"username": "username 2",
+"password": "password 2",
+}
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

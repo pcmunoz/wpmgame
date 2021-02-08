@@ -29,7 +29,7 @@ export const View: React.FC<ViewProps> = ({ characters }) => {
     const classes = useStyles()
 
     return (
-        <Grid className={classes.container}>
+        <Grid item className={classes.container} xs={12}>
             {characters.map((value, index) => (
                 <Typography
                     key={index}

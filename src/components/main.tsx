@@ -10,8 +10,14 @@ import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import { LoremIpsum } from 'lorem-ipsum'
 import React from 'react'
+import { User } from '../App'
 import { Appbar } from './Appbar'
+import { Result } from './Result'
 import { View } from './View'
+
+type MainProps = {
+    user?: User
+}
 
 export interface Character {
     value: string
@@ -19,7 +25,7 @@ export interface Character {
     currentWord: boolean
 }
 
-interface GameData {
+export interface GameData {
     characters: string
     typedCharacters: string
     timeLeft: number
@@ -63,7 +69,7 @@ const lorem = new LoremIpsum({
 export const GAME_DURATION = 10
 export const START_TIMER = 3
 
-export const Main: React.FC = () => {
+export const Main: React.FC<MainProps> = ({ user }) => {
     const classes = useStyles()
     const [characters, setCharacters] = React.useState<Character[]>([])
     const [typedCharacters, setTypedCharacters] = React.useState<string>('')
@@ -78,6 +84,10 @@ export const Main: React.FC = () => {
     const [inputDisabled, setInputDisabled] = React.useState<boolean>(true)
     const [errorCount, setErrorCount] = React.useState<number>(0)
     const [gameData, setGameData] = React.useState<Partial<GameData>[]>([])
+    const [saveData, setSaveData] = React.useState<boolean>(false)
+    const [error, setError] = React.useState(null)
+    const [isLoaded, setIsLoaded] = React.useState<boolean>(false)
+    const [isSuccessful, setIsSuccessful] = React.useState<boolean>(false)
 
     const [resultsDialogOpen, setResultsDialogOpen] = React.useState<boolean>(false)
 
@@ -262,19 +272,50 @@ export const Main: React.FC = () => {
                 },
             ])
             setResultsDialogOpen(true)
+            setSaveData(true)
+            setIsLoaded(false)
+            setCharacters([])
         }
     }, [timeLeft, characters, correctCharacters, errorCount, wordsTyped, typedCharacters, gameData])
 
-    console.log('gameData', gameData)
+    React.useEffect(() => {
+        if (saveData && user?.id && !isLoaded) {
+            fetch(`https://60205a6546f1e40017803271.mockapi.io/users`, {
+                method: 'POST',
+                body: JSON.stringify({ ...user, gameData: 'test' }),
+            })
+                .then((res) => res.json())
+                .then(
+                    (result) => {
+                        setIsLoaded(true)
+                        setSaveData(false)
+                        setIsSuccessful(true)
+                    },
+                    (error) => {
+                        setIsLoaded(true)
+                        setSaveData(false)
+                        setError(error)
+                    },
+                )
+        }
+    }, [saveData, user, gameData])
+
+    console.log('error', error)
+    console.log('successful', isSuccessful)
 
     return (
         <Container>
-            <Appbar time={timeLeft} wordsPerMinute={wordsPerMinute} />
+            <Appbar
+                time={timeLeft}
+                wordsPerMinute={wordsPerMinute}
+                username={user?.username ?? ''}
+            />
             <Grid container spacing={2}>
                 <View characters={characters} />
-                <Grid container item>
+                <Grid container item xs={12}>
                     <Grid item xs>
                         <TextField
+                            size="small"
                             autoComplete="off"
                             type="text"
                             value={inputValue}
@@ -288,10 +329,11 @@ export const Main: React.FC = () => {
                         />
                     </Grid>
                     <Grid item xs>
-                        <Button variant="contained" onClick={newGameClick}>
+                        <Button variant="contained" onClick={newGameClick} color="primary">
                             New Game
                         </Button>
                     </Grid>
+
                     <Dialog open={newGameTimer > 0}>
                         <DialogContent>
                             <Typography>{`New Game starts in ${newGameTimer}`}</Typography>
@@ -326,6 +368,9 @@ export const Main: React.FC = () => {
                             </Button>
                         </DialogActions>
                     </Dialog>
+                </Grid>
+                <Grid item xs={12}>
+                    <Result results={gameData} />
                 </Grid>
             </Grid>
         </Container>
