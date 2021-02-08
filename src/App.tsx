@@ -2,14 +2,7 @@ import React from 'react'
 import './App.css'
 import { Login } from './components/Login'
 import { Main } from './components/Main'
-
-export interface User {
-    id: string
-    createdAt: string
-    username: string
-    password: string
-    gameData: any
-}
+import { User } from './constants'
 
 const tempUsers: User[] = [
     {

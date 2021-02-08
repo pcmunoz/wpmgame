@@ -9,31 +9,13 @@ import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import { LoremIpsum } from 'lorem-ipsum'
 import React from 'react'
-import { User } from '../App'
+import { Character, GameData, GAME_DURATION, START_TIMER, User } from '../constants'
 import { Appbar } from './Appbar'
 import { Result } from './Result'
 import { View } from './View'
 
 type MainProps = {
     user?: User
-}
-
-export interface Character {
-    value: string
-    display: 'initial' | 'correct' | 'wrong'
-    currentWord: boolean
-}
-
-export interface GameData {
-    characters: string
-    typedCharacters: string
-    timeLeft: number
-    wordsTyped: number
-    correctCharacters: number
-    errorCount: number
-    wordsPerMinute: number
-    completion: number
-    duration: number
 }
 
 const lorem = new LoremIpsum({
@@ -46,9 +28,6 @@ const lorem = new LoremIpsum({
         min: 6,
     },
 })
-
-export const GAME_DURATION = 10
-export const START_TIMER = 3
 
 export const Main: React.FC<MainProps> = ({ user }) => {
     const [characters, setCharacters] = React.useState<Character[]>([])

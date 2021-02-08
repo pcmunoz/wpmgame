@@ -4,11 +4,6 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import React from 'react'
 
-export interface Character {
-    value: string
-    display: 'initial' | 'correct' | 'wrong'
-}
-
 type Appbar = {
     time: number
     wordsPerMinute?: number
@@ -46,7 +41,7 @@ export const Appbar: React.FC<Appbar> = ({ time, wordsPerMinute, username }) => 
                     User: {username}
                 </Typography>
                 <Typography variant="h6" className={classes.title}>
-                    TIme: {time}
+                    TIme: {time}s
                 </Typography>
                 <Typography variant="h6" className={classes.title}>
                     Current WPM: {wordsPerMinute?.toFixed(2)}

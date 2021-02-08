@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid'
 import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import React from 'react'
-import { User } from '../App'
+import { User } from '../constants'
 
 type LoginProps = {
     users: User[]

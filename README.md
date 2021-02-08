@@ -13,6 +13,8 @@ USERS IN MOCK
 "password": "password 2",
 }
 
+GAME_TIME can be adjusted in constants.ts
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
